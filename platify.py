@@ -12,6 +12,16 @@ def fit_part(array, x, y, length, maxWidth):
         count = count + 1
     return 1
 
+def makeItem(quantity, partNumber, color):
+    if quantity != 0 :
+        print "  <ITEM>"
+        print "    <ITEMTYPE>P</ITEMTYPE>"
+        print "    <ITEMID>" + partNumber + "</ITEMID>"
+        print "    <COLOR>" + color + "</COLOR>"
+        print "    <MINQTY>"+ str(quantity).lstrip(" ") + "</MINQTY>"
+        print "    <CONDITION>U</CONDITION>"
+        print"  </ITEM>"
+
 # the source png file must have dimensions that are multiples of 5 for x and multiples of 2 for y.
 r=png.Reader('logo_18.png')
 # height is in plates
@@ -120,13 +130,19 @@ blackbotBrickStrings = ["|________|","|______|","|____|","|__|","|_|","__","1"]
 i = 0.0
 PieceCounter = 0
 white2plateCnt = [0, 0, 0, 0 ,0 ,0, 0]
+white2platePN = ["3832","3034","3795","3020","3021","3022","3023"]
 white1plateCnt = [0, 0, 0, 0 ,0 ,0, 0]
+white1platePN = ["4477","3460","3666","3710","3623","3023","3024"]
 blackplateCnt = [0, 0, 0, 0 ,0 ,0, 0]
+blackplatePN = ["3832","3034","3795","3020","3021","3022","3023"]
 blackbrickCnt = [0, 0, 0, 0 ,0 ,0, 0]
+blackbrickPN = ["3006","3007","2456","3001","3002","3003","3004"]
 white2brickCnt = [0, 0, 0, 0 ,0 ,0, 0]
+white2brickPN = ["3006","3007","2456","3001","3002","3003","3004"]
 white1brickCnt = [0, 0, 0, 0 ,0 ,0, 0]
+white1brickPN = ["6111","3008","3009","3010","3622","3004","3005"]
 
-minScnt = 0
+minScnt = 1
 while i < int(height / 2) :
     j = 0
     while j < int(width / 5) :
@@ -250,4 +266,35 @@ print "White 2x bricks: ", white2brickCnt
 print "White 1x bricks: ", white1brickCnt
 print "Black 2x plates: ", blackplateCnt
 print "Black 2x bricks: ", blackbrickCnt
+# optimize: group the 2x1 with the 1x2
+white2plateCnt[-1] = white2plateCnt[-1] + white1plateCnt[-2]
+white1plateCnt[-2] = 0
+white2brickCnt[-1] = white2brickCnt[-1] + white1brickCnt[-2]
+white1brickCnt[-2] = 0
+
+print "                    10   8   6   4  3  2  1"
+print "White 2x plates: ", white2plateCnt
+print "White 1x plates: ", white1plateCnt
+print "White 2x bricks: ", white2brickCnt
+print "White 1x bricks: ", white1brickCnt
+print "Black 2x plates: ", blackplateCnt
+print "Black 2x bricks: ", blackbrickCnt
+
+# Bricklink XML
+
+print "<INVENTORY>"
+cnt = 0
+while cnt < len(sizesOfBricks) :
+    makeItem(white2plateCnt[cnt], white2platePN[cnt], "1")
+    makeItem(white1plateCnt[cnt], white1platePN[cnt], "1")
+    makeItem(blackplateCnt[cnt], blackplatePN[cnt], "11")
+    makeItem(blackbrickCnt[cnt], blackbrickPN[cnt], "11")
+    makeItem(white2brickCnt[cnt], white2brickPN[cnt], "1")
+    makeItem(white1brickCnt[cnt], white1brickPN[cnt], "1")
+    cnt = cnt + 1
+print "</INVENTORY>"
+
+
+
+
        
